@@ -1,23 +1,56 @@
 {
-  "name": "sharada-school-server",
+  "name": "sharada-parent-app",
+  "main": "expo-router/entry",
   "version": "1.0.0",
-  "private": true,
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon -e js,json,env index.js",
-    "seed": "node seed.js",
-    "db:seed": "node seed.js"
+  "description": "Sharada English Medium School - Parent Portal Mobile Application",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sharada-school/MobileApp.git"
   },
   "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.1",
-    "express": "^5.1.0",
-    "nodemailer": "^10.0.1",
-    "pg": "^8.13.1",
-    "run": "^2.1.7"
+    "@expo/metro-runtime": "~57.0.12",
+    "@expo/ui": "~57.0.12",
+    "@expo/vector-icons": "^15.1.1",
+    "expo": "~57.0.15",
+    "expo-constants": "~57.0.13",
+    "expo-device": "~57.0.1",
+    "expo-font": "~57.0.1",
+    "expo-glass-effect": "~57.0.1",
+    "expo-image": "~57.0.3",
+    "expo-linking": "~57.0.7",
+    "expo-router": "~57.0.15",
+    "expo-splash-screen": "~57.0.7",
+    "expo-status-bar": "~57.0.1",
+    "expo-symbols": "~57.0.2",
+    "expo-system-ui": "~57.0.2",
+    "expo-web-browser": "~57.0.2",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.2",
+    "react-native-gesture-handler": "~2.32.0",
+    "react-native-reanimated": "4.5.1",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "~4.26.0",
+    "react-native-web": "~0.21.0",
+    "react-native-worklets": "0.10.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
-  }
+    "@types/react": "~19.2.2",
+    "eas-cli": "^24.3.0",
+    "eslint": "^9.0.0",
+    "eslint-config-expo": "~57.0.2",
+    "typescript": "~6.0.3"
+  },
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "prebuild": "expo prebuild --clean",
+    "build:android": "npx eas build --platform android --profile preview",
+    "build:ios": "npx eas build --platform ios --profile preview",
+    "build:ios-device": "npx eas build --platform ios --profile preview-device",
+    "build:all": "npx eas build --platform all --profile preview",
+    "lint": "expo lint"
+  },
+  "private": true
 }
