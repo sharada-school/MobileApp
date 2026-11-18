@@ -11,7 +11,7 @@ import {
 import { useParent } from '../context/ParentContext';
 import { api, AttendanceData, AttendanceRecord } from '../services/api';
 import { KidSelector } from './KidSelector';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 export const AttendanceView: React.FC = () => {
   const { activeKid } = useParent();

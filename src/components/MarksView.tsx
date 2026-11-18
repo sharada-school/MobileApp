@@ -11,7 +11,7 @@ import {
 import { useParent } from '../context/ParentContext';
 import { api, MarksData, ExamData, SubjectMark } from '../services/api';
 import { KidSelector } from './KidSelector';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 type ViewMode = 'final' | 'register' | 'matrix' | 'byExam';
 

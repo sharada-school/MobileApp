@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useParent } from '../context/ParentContext';
 
 export const ParentProfileView: React.FC = () => {
@@ -48,7 +48,7 @@ export const ParentProfileView: React.FC = () => {
       <View style={styles.sectionCard}>
         <View style={styles.schoolHeaderRow}>
           <Image
-            source={require('../../assets/images/school-logo.png')}
+            source={require('../../assets/images/logo.jpeg')}
             style={styles.schoolLogoMini}
             resizeMode="contain"
           />

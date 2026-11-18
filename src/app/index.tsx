@@ -8,7 +8,7 @@ import {
   Platform,
   Image,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useParent } from '@/context/ParentContext';
 import { PhoneLogin } from '@/components/PhoneLogin';
 import { ParentHomeView } from '@/components/ParentHomeView';
@@ -42,7 +42,7 @@ export default function HomeScreen() {
       <View style={styles.topHeader}>
         <View style={styles.brandRow}>
           <Image
-            source={require('../../assets/images/school-logo.png')}
+            source={require('../../assets/images/logo.jpeg')}
             style={styles.schoolLogo}
             resizeMode="contain"
           />

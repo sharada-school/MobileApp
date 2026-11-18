@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 
-// Default API Base URL: Sharada School Management Portal
-export const DEFAULT_PORTAL_URL = 'https://portal.sharada-school.co.in';
+// Default API Base URL: Sharada School Live Backend API Server
+export const DEFAULT_PORTAL_URL = 'https://server-0knm.onrender.com';
 
 let customApiBaseUrl: string | null = null;
 

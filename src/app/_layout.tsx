@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react';
 import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useColorScheme, SafeAreaView, StyleSheet, StatusBar, Platform } from 'react-native';
@@ -8,6 +9,11 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+
+  useEffect(() => {
+    // Dismiss native splash screen once root layout renders to avoid deadlock/freeze
+    SplashScreen.hideAsync().catch(() => {});
+  }, []);
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>

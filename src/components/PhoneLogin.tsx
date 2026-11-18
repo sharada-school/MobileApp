@@ -12,17 +12,15 @@ import {
   Image,
   Linking,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useParent } from '../context/ParentContext';
-import { getApiBaseUrl, setCustomApiBaseUrl, testServerConnection } from '../services/api';
-
 type ErrorCategory = 'unregistered' | 'invalid_format' | 'connection' | 'general';
 
 interface ParsedErrorInfo {
   category: ErrorCategory;
   title: string;
   message: string;
-  actionType?: 'call_office' | 'server_settings' | 'clear';
+  actionType?: 'call_office' | 'clear';
 }
 
 const parseErrorMessage = (errText: string, currentPhone: string): ParsedErrorInfo => {
@@ -67,8 +65,7 @@ const parseErrorMessage = (errText: string, currentPhone: string): ParsedErrorIn
       category: 'connection',
       title: 'School Server Connection Error',
       message:
-        'Could not connect to the school backend server. Please check your internet or Wi-Fi connection, or verify the server address in Server Connection settings below.',
-      actionType: 'server_settings'
+        'Could not connect to the school backend server. Please check your internet or Wi-Fi connection and try again.'
     };
   }
 
@@ -104,18 +101,6 @@ export const PhoneLogin: React.FC = () => {
 
   const inputRef = useRef<TextInput>(null);
   const scrollViewRef = useRef<ScrollView>(null);
-
-  // Server connectivity state
-  const [showServerSettings, setShowServerSettings] = useState(false);
-  const [serverUrl, setServerUrl] = useState(getApiBaseUrl());
-  const [testingConnection, setTestingConnection] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState<{
-    type: 'idle' | 'success' | 'error';
-    message: string;
-  }>({
-    type: 'idle',
-    message: ''
-  });
 
   const activeError = localError || error;
   const parsedError = activeError ? parseErrorMessage(activeError, phone) : null;
@@ -176,27 +161,6 @@ export const PhoneLogin: React.FC = () => {
     });
   };
 
-  const handleTestServer = async (urlToTest?: string) => {
-    setTestingConnection(true);
-    setConnectionStatus({ type: 'idle', message: 'Testing connection...' });
-    const target = urlToTest || serverUrl;
-    const res = await testServerConnection(target);
-    setTestingConnection(false);
-    setConnectionStatus({
-      type: res.success ? 'success' : 'error',
-      message: res.message
-    });
-  };
-
-  const handleSaveServer = (urlToSave: string) => {
-    setCustomApiBaseUrl(urlToSave);
-    setServerUrl(urlToSave);
-    setConnectionStatus({
-      type: 'success',
-      message: `Server set to ${urlToSave}`
-    });
-  };
-
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -211,7 +175,7 @@ export const PhoneLogin: React.FC = () => {
         <View style={styles.brandContainer}>
           <View style={styles.logoWrapper}>
             <Image
-              source={require('../../assets/images/school-logo.png')}
+              source={require('../../assets/images/logo.jpeg')}
               style={styles.logoImage}
               resizeMode="contain"
             />
@@ -394,25 +358,6 @@ export const PhoneLogin: React.FC = () => {
                 </View>
               )}
 
-              {/* Action Button for Server Connection Errors */}
-              {parsedError.category === 'connection' && (
-                <TouchableOpacity
-                  style={styles.configureServerBtn}
-                  onPress={() => {
-                    setShowServerSettings(true);
-                    setTimeout(() => {
-                      scrollViewRef.current?.scrollToEnd({ animated: true });
-                    }, 100);
-                  }}
-                  activeOpacity={0.85}
-                >
-                  <Ionicons name="settings-outline" size={16} color="#B45309" />
-                  <Text style={styles.configureServerBtnText}>
-                    Open Server Connection Settings
-                  </Text>
-                </TouchableOpacity>
-              )}
-
               {/* Clear & Retype action */}
               <TouchableOpacity
                 style={styles.retryActionBtn}
@@ -454,125 +399,6 @@ export const PhoneLogin: React.FC = () => {
               </View>
             )}
           </TouchableOpacity>
-
-          {/* Quick Demo Fill Helper (for easy testing with sample student account) */}
-          <View style={styles.demoHelperBox}>
-            <Text style={styles.demoHelperLabel}>Registered Test Account:</Text>
-            <TouchableOpacity
-              style={styles.demoHelperPill}
-              onPress={() => {
-                setPhone('1234567890');
-                setLocalError('');
-                clearError();
-              }}
-            >
-              <Ionicons name="key-outline" size={12} color="#3730A3" />
-              <Text style={styles.demoHelperPillText}>Fill Demo Number: 1234567890</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Server Connection Settings (Collapsible) */}
-        <View style={styles.serverSection}>
-          <TouchableOpacity
-            style={styles.serverToggle}
-            onPress={() => setShowServerSettings(!showServerSettings)}
-            activeOpacity={0.8}
-          >
-            <View style={styles.serverToggleLeft}>
-              <Text style={styles.serverToggleIcon}>⚙️</Text>
-              <View>
-                <Text style={styles.serverToggleTitle}>Server Connection</Text>
-                <Text style={styles.serverToggleSub}>{serverUrl}</Text>
-              </View>
-            </View>
-            <Text style={styles.serverToggleArrow}>{showServerSettings ? '▲' : '▼'}</Text>
-          </TouchableOpacity>
-
-          {showServerSettings && (
-            <View style={styles.serverCard}>
-              <Text style={styles.serverCardLabel}>School Portal Backend API URL</Text>
-              <TextInput
-                style={styles.serverInput}
-                value={serverUrl}
-                onChangeText={setServerUrl}
-                placeholder="https://portal.sharada-school.co.in"
-                placeholderTextColor="#94A3B8"
-                autoCapitalize="none"
-                autoCorrect={false}
-              />
-
-              <View style={styles.quickPresetRow}>
-                <TouchableOpacity
-                  style={[
-                    styles.quickPresetBtn,
-                    serverUrl === 'https://portal.sharada-school.co.in' && { backgroundColor: '#DBEAFE', borderColor: '#2563EB' }
-                  ]}
-                  onPress={() => {
-                    const u = 'https://portal.sharada-school.co.in';
-                    setServerUrl(u);
-                    handleSaveServer(u);
-                  }}
-                >
-                  <Text style={[
-                    styles.quickPresetText,
-                    serverUrl === 'https://portal.sharada-school.co.in' && { color: '#1D4ED8', fontWeight: '700' }
-                  ]}>Sharada Portal (Live)</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.quickPresetBtn}
-                  onPress={() => {
-                    const u = 'http://10.0.2.2:4000';
-                    setServerUrl(u);
-                    handleSaveServer(u);
-                  }}
-                >
-                  <Text style={styles.quickPresetText}>Local Emulator</Text>
-                </TouchableOpacity>
-              </View>
-
-              {connectionStatus.message ? (
-                <View
-                  style={[
-                    styles.connectionStatusBox,
-                    connectionStatus.type === 'success' && styles.connectionStatusSuccess,
-                    connectionStatus.type === 'error' && styles.connectionStatusError,
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.connectionStatusText,
-                      connectionStatus.type === 'success' && { color: '#059669' },
-                      connectionStatus.type === 'error' && { color: '#DC2626' },
-                    ]}
-                  >
-                    {connectionStatus.type === 'success' ? '✓ ' : '✗ '}
-                    {connectionStatus.message}
-                  </Text>
-                </View>
-              ) : null}
-
-              <View style={styles.serverActionRow}>
-                <TouchableOpacity
-                  style={styles.pingButton}
-                  onPress={() => handleTestServer()}
-                  disabled={testingConnection}
-                >
-                  {testingConnection ? (
-                    <ActivityIndicator size="small" color="#2563EB" />
-                  ) : (
-                    <Text style={styles.pingButtonText}>Test Ping</Text>
-                  )}
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.saveServerBtn}
-                  onPress={() => handleSaveServer(serverUrl)}
-                >
-                  <Text style={styles.saveServerBtnText}>Save Server</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          )}
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -603,11 +429,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 14,
-    shadowColor: '#2563EB',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
-    elevation: 5,
     borderWidth: 2,
     borderColor: '#93C5FD',
   },
@@ -664,11 +485,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
     padding: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
     borderWidth: 1,
     borderColor: '#E2E8F0',
   },
@@ -865,32 +681,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     gap: 8,
     marginTop: 8,
-    shadowColor: '#DC2626',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 2,
   },
   callOfficeBtnText: {
     color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  configureServerBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FEF3C7',
-    borderWidth: 1,
-    borderColor: '#FCD34D',
-    borderRadius: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    gap: 6,
-    marginTop: 10,
-  },
-  configureServerBtnText: {
-    color: '#92400E',
     fontSize: 12,
     fontWeight: '700',
   },
@@ -937,11 +730,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 18,
-    shadowColor: '#2563EB',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 3,
   },
   submitButtonDisabled: {
     opacity: 0.7,
@@ -961,178 +749,5 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
     letterSpacing: 0.3,
-  },
-
-  demoHelperBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-    gap: 6,
-    marginTop: 14,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
-  },
-  demoHelperLabel: {
-    fontSize: 11,
-    color: '#64748B',
-  },
-  demoHelperPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: '#EEF2FF',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: '#C7D2FE',
-  },
-  demoHelperPillText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#3730A3',
-  },
-
-  /* Server settings section */
-  serverSection: {
-    width: '100%',
-    maxWidth: 440,
-    marginTop: 20,
-    marginBottom: 40,
-  },
-  serverToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#F1F5F9',
-    borderRadius: 14,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  serverToggleLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    flex: 1,
-  },
-  serverToggleIcon: {
-    fontSize: 18,
-  },
-  serverToggleTitle: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#334155',
-  },
-  serverToggleSub: {
-    fontSize: 11,
-    color: '#64748B',
-    marginTop: 1,
-  },
-  serverToggleArrow: {
-    fontSize: 12,
-    color: '#64748B',
-    paddingLeft: 8,
-  },
-  serverCard: {
-    backgroundColor: '#FFFFFF',
-    borderBottomLeftRadius: 14,
-    borderBottomRightRadius: 14,
-    padding: 16,
-    borderWidth: 1,
-    borderTopWidth: 0,
-    borderColor: '#E2E8F0',
-  },
-  serverCardLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#475569',
-    marginBottom: 8,
-  },
-  serverInput: {
-    backgroundColor: '#F8FAFC',
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 13,
-    color: '#0F172A',
-    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-  },
-  quickPresetRow: {
-    flexDirection: 'row',
-    gap: 8,
-    marginTop: 8,
-  },
-  quickPresetBtn: {
-    backgroundColor: '#EEF2FF',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#C7D2FE',
-  },
-  quickPresetText: {
-    fontSize: 11,
-    color: '#3730A3',
-    fontWeight: '600',
-  },
-  connectionStatusBox: {
-    marginTop: 12,
-    padding: 10,
-    borderRadius: 8,
-    backgroundColor: '#F8FAFC',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  connectionStatusSuccess: {
-    backgroundColor: '#ECFDF5',
-    borderColor: '#A7F3D0',
-  },
-  connectionStatusError: {
-    backgroundColor: '#FEF2F2',
-    borderColor: '#FECACA',
-  },
-  connectionStatusText: {
-    fontSize: 12,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  serverActionRow: {
-    flexDirection: 'row',
-    gap: 10,
-    marginTop: 14,
-  },
-  pingButton: {
-    flex: 1,
-    backgroundColor: '#F1F5F9',
-    paddingVertical: 10,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-  },
-  pingButtonText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#2563EB',
-  },
-  saveServerBtn: {
-    flex: 1,
-    backgroundColor: '#2563EB',
-    paddingVertical: 10,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  saveServerBtnText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#FFFFFF',
   },
 });
