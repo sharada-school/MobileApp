@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme, SafeAreaView, StyleSheet, StatusBar, Platform } from 'react-native';
+import { useColorScheme, StyleSheet, StatusBar, Platform } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Slot } from 'expo-router';
 import { ParentProvider } from '@/context/ParentContext';
 
@@ -16,20 +17,26 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />
-      <ParentProvider>
-        <SafeAreaView style={styles.container}>
-          <Slot />
-        </SafeAreaView>
-      </ParentProvider>
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor="#FFFFFF"
+          translucent={Platform.OS === 'android'}
+        />
+        <ParentProvider>
+          <SafeAreaView style={styles.container} edges={['top', 'left', 'right', 'bottom']}>
+            <Slot />
+          </SafeAreaView>
+        </ParentProvider>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: '#FFFFFF',
   },
 });

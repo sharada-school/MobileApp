@@ -46,9 +46,13 @@ export default function HomeScreen() {
             style={styles.schoolLogo}
             resizeMode="contain"
           />
-          <View>
-            <Text style={styles.schoolTitle}>Sharada English Medium School</Text>
-            <Text style={styles.schoolSubtitle}>Cherkady • Est. 2017</Text>
+          <View style={styles.brandTextContainer}>
+            <Text style={styles.schoolTitle} numberOfLines={1} ellipsizeMode="tail">
+              Sharada English Medium School
+            </Text>
+            <Text style={styles.schoolSubtitle} numberOfLines={1}>
+              Cherkady • Est. 2017
+            </Text>
           </View>
         </View>
 
@@ -56,11 +60,21 @@ export default function HomeScreen() {
           <TouchableOpacity
             style={styles.activeKidPill}
             onPress={() => setCurrentTab('children')}
+            activeOpacity={0.75}
           >
-            <Text style={styles.activeKidPillLabel}>Student:</Text>
-            <Text style={styles.activeKidPillName} numberOfLines={1}>
-              {activeKid.firstName} ({activeKid.className || '-'})
-            </Text>
+            <View style={styles.activeKidAvatarMini}>
+              <Text style={styles.activeKidAvatarText}>
+                {activeKid.firstName?.[0]?.toUpperCase() || 'S'}
+              </Text>
+            </View>
+            <View style={styles.activeKidInfoMini}>
+              <Text style={styles.activeKidName} numberOfLines={1}>
+                {activeKid.firstName}
+              </Text>
+              <Text style={styles.activeKidClass} numberOfLines={1}>
+                Class {activeKid.className || '-'}
+              </Text>
+            </View>
             {kids.length > 1 && (
               <View style={styles.kidsCountTag}>
                 <Text style={styles.kidsCountTagText}>{kids.length}</Text>
@@ -180,30 +194,40 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 14,
+    paddingHorizontal: 16,
     paddingVertical: 10,
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
+    borderBottomColor: '#F1F5F9',
+    elevation: 2,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
   },
   brandRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
     flex: 1,
+    marginRight: 10,
   },
   schoolLogo: {
     width: 38,
     height: 38,
     borderRadius: 19,
     borderWidth: 1,
-    borderColor: '#93C5FD',
+    borderColor: '#BFDBFE',
+  },
+  brandTextContainer: {
+    flex: 1,
+    justifyContent: 'center',
   },
   schoolTitle: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '800',
     color: '#0F172A',
-    letterSpacing: -0.3,
+    letterSpacing: -0.2,
   },
   schoolSubtitle: {
     fontSize: 11,
@@ -214,33 +238,53 @@ const styles = StyleSheet.create({
   activeKidPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#EEF2FF',
+    backgroundColor: '#F8FAFC',
     paddingHorizontal: 8,
-    paddingVertical: 5,
-    borderRadius: 16,
+    paddingVertical: 4,
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#C7D2FE',
-    gap: 4,
-    maxWidth: 150,
+    borderColor: '#E2E8F0',
+    gap: 6,
+    maxWidth: 125,
+    flexShrink: 0,
   },
-  activeKidPillLabel: {
-    fontSize: 10,
-    color: '#4338CA',
-    fontWeight: '600',
+  activeKidAvatarMini: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#EFF6FF',
+    borderWidth: 1,
+    borderColor: '#BFDBFE',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  activeKidPillName: {
+  activeKidAvatarText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#2563EB',
+  },
+  activeKidInfoMini: {
+    flexShrink: 1,
+  },
+  activeKidName: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#312E81',
+    color: '#1E293B',
+    lineHeight: 14,
+  },
+  activeKidClass: {
+    fontSize: 9,
+    fontWeight: '600',
+    color: '#64748B',
+    lineHeight: 12,
   },
   kidsCountTag: {
-    backgroundColor: '#4338CA',
+    backgroundColor: '#2563EB',
     width: 16,
     height: 16,
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    marginLeft: 2,
   },
   kidsCountTagText: {
     color: '#FFFFFF',
